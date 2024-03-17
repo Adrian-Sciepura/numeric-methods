@@ -8,9 +8,12 @@ class MACD:
         self._fileName = fileName
         self._startRow = 1
         self._valueColumnId = 4
-
+        self.MACDValues = []
+        self.SIGNALValues = []
         self.__loadDataFromFile()
+
         self.__calculateMACD()
+        self.__calculateSIGNAL()
 
     def __loadDataFromFile(self) -> None:
         str2date = lambda x: datetime.strptime(x.decode("utf-8"), '%Y-%m-%d')
@@ -36,9 +39,21 @@ class MACD:
 
         return numerator / denominator
 
-    def __calculateMACD(self) -> None:
-        self.MACDValues = []
+    def __calculateSIGNAL(self):
+        alpha = 2 / (9 + 1)
+        for i in range(0, len(self.MACDValues)):
+            numerator = 0
+            denominator = 0
+            for j in range(0, 9+1):
+                if i - j < 0:
+                    break
 
+                power = pow((1 - alpha), j)
+                numerator += self.MACDValues[i - j] * power
+                denominator += power
+            self.SIGNALValues.append(numerator / denominator)
+
+    def __calculateMACD(self) -> None:
         for i in range(self._startRow, len(self._importData)):
             self.MACDValues.append(self.__calculateEMA(12, i) - self.__calculateEMA(26, i))
 
@@ -61,7 +76,8 @@ class MACD:
             return
 
         plt.xticks(rotation=30)
-        plt.plot(self._dates[startDateId:endDateId], self.MACDValues[startDateId:endDateId])
+        plt.plot(self._dates[startDateId:endDateId], self.MACDValues[startDateId:endDateId], color='b')
+        plt.plot(self._dates[startDateId:endDateId], self.SIGNALValues[startDateId:endDateId], color='r')
         plt.xlabel('dates')
         plt.ylabel('MACD values')
         plt.title('MACD')
