@@ -1,7 +1,11 @@
 from datetime import datetime
-
 from macd import MACD
 
 macd = MACD("data.csv")
-macd.showPlot(datetime(2023, 1, 2), datetime(2024, 3, 15))
-macd.playOnTheStockMarket(datetime(2023, 1, 2), datetime(2024, 3, 15))
+
+startDate = datetime(2018, 1, 3)
+endDate = datetime(2024, 3, 15)
+
+macd.showPlot(startDate, endDate)
+macd.playOnTheStockMarket(startDate, endDate)
+macd.showActionsValuesPlot("CD PROJEKT RED")

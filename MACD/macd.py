@@ -82,11 +82,10 @@ class MACD:
             if cross != 0:
                 self.intersectPoints.append([self._dates[i + 1], self.MACDValues[i + 1], True if cross == 1 else False])
 
-    def __getActionPriceByDate(self, date: datetime) -> int:
-        for entry in self._importData:
-            if entry[0] == date:
-                return entry[self._valueColumnId]
-
+    def __getActionPriceIndexByDate(self, date: datetime) -> int:
+        for i in range(0, len(self._importData)):
+            if self._importData[i][0] == date:
+                return i
         return -1
 
     def showPlot(self, startDate: datetime, endDate: datetime) -> None:
@@ -107,44 +106,77 @@ class MACD:
         if startDateId == -1 or endDateId == -1:
             return
 
-        plt.xticks(rotation=30)
+        plt.rcParams['figure.figsize'] = [12, 5]
         plt.plot(self._dates[startDateId:endDateId], self.MACDValues[startDateId:endDateId], label='MACD', color='b')
-        plt.plot(self._dates[startDateId:endDateId], self.SIGNALValues[startDateId:endDateId], label='SIGNAL',
-                 color='r')
+        plt.plot(self._dates[startDateId:endDateId], self.SIGNALValues[startDateId:endDateId], label='SIGNAL', color='r')
 
         intersect = list(filter(lambda a: startDate <= a[0] <= endDate, self.intersectPoints))
 
         for i in intersect:
             plt.plot(i[0], i[1], 'yo' if i[2] else 'go', markersize=4)
 
-        plt.xlabel('dates')
-        plt.ylabel('MACD values')
-        plt.title('MACD')
+        plt.xlabel('data')
+        plt.ylabel('wartość')
+        plt.title('MACD i SIGNAL')
         plt.legend()
         plt.show()
 
     def playOnTheStockMarket(self, startDate: datetime, endDate: datetime) -> None:
+        datesInRange = list(filter(lambda a: startDate <= a <= endDate, self._dates))
+        capitalByDate: list[int] = []
         shares = 1000
         money = 0
 
-        takeAction = list(filter(lambda a: startDate <= a[0] <= endDate, self.intersectPoints))
+        indexOfSharesValue = self.__getActionPriceIndexByDate(datesInRange[0])
 
-        for action in takeAction:
-            sharesValue = self.__getActionPriceByDate(action[0])
-            formatedDate = action[0].strftime("%Y-%m-%d")
+        lastActionIndex = 0
+        takeActionSize = len(self.intersectPoints)
+        iterator = 0
+        for date in datesInRange:
+            sharesValue = self._importData[indexOfSharesValue + iterator][self._valueColumnId]
 
-            if sharesValue >= 0:
-                if action[2]:
-                    # Sell all
-                    money += sharesValue * shares
-                    shares = 0
-                    print("DATE:", formatedDate, ", ACTION: SELL ALL, MONEY:", money, ", SHARES:", shares)
-                else:
-                    # Buy as many as possible
-                    howManyToBuy = int(money / sharesValue)
-                    money -= howManyToBuy * sharesValue
-                    shares = howManyToBuy
-                    if shares == 0 and howManyToBuy == 0:
-                        print("DATE:", formatedDate, ", STATUS: YOU ARE BROKE :(")
+            while lastActionIndex < takeActionSize and self.intersectPoints[lastActionIndex][0] < date:
+                lastActionIndex += 1
+
+            # Found
+            if lastActionIndex < takeActionSize and self.intersectPoints[lastActionIndex][0] == date:
+                action = self.intersectPoints[lastActionIndex]
+                formattedDate = action[0].strftime("%Y-%m-%d")
+
+                if sharesValue >= 0:
+                    if action[2]:
+                        # Sell all
+                        money += sharesValue * shares
+                        shares = 0
+                        print("DATE:", formattedDate, ", ACTION: SELL ALL, MONEY:", money, ", SHARES:", shares)
                     else:
-                        print("DATE:", formatedDate, ", ACTION: BUY, MONEY:", money, ", SHARES:", shares)
+                        # Buy as many as possible
+                        howManyToBuy = int(money / sharesValue)
+                        money -= howManyToBuy * sharesValue
+                        shares = howManyToBuy
+                        if shares == 0 and howManyToBuy == 0:
+                            print("DATE:", formattedDate, ", STATUS: YOU ARE BROKE :(")
+                        else:
+                            print("DATE:", formattedDate, ", ACTION: BUY, MONEY:", money, ", SHARES:", shares)
+
+            capitalByDate.append(money + shares * sharesValue)
+            iterator += 1
+
+        plt.xlabel('Data')
+        plt.ylabel('Wartość')
+        plt.title('Kapitał')
+        plt.plot(datesInRange, capitalByDate, label='CENA')
+        plt.legend()
+        plt.show()
+
+    def showActionsValuesPlot(self, companyName: str):
+        actionValues = []
+
+        for i in range(0, len(self._importData)-1):
+            actionValues.append(self._importData[i][self._valueColumnId])
+
+        plt.xlabel("Data")
+        plt.ylabel("Wartość")
+        plt.title("Wartość akcji firmy " + companyName)
+        plt.plot(self._dates, actionValues)
+        plt.show()
