@@ -4,10 +4,10 @@ from datetime import datetime
 
 
 class MACD:
-    def __init__(self, fileName: str):
+    def __init__(self, fileName: str, valueColumnId: int):
         self._fileName = fileName
         self._startRow = 1
-        self._valueColumnId = 4
+        self._valueColumnId = valueColumnId
         self.MACDValues = []
         self.SIGNALValues = []
         self.intersectPoints = []
@@ -88,23 +88,18 @@ class MACD:
                 return i
         return -1
 
-    def showPlot(self, startDate: datetime, endDate: datetime) -> None:
-        startDateId = -1
-        endDateId = -1
+    def showPlot(self, startDate: datetime, endDate: datetime, plotName: str) -> None:
+        startDateId: int = 0
+        endDateId: int = 0
+        datesSize = len(self._dates)
 
-        for i in range(self._startRow, len(self._importData)):
-            if self._importData[i][0] == startDate:
-                startDateId = i
-                break
+        while startDateId < datesSize and self._dates[startDateId] < startDate:
+            startDateId += 1
 
-        if startDateId != -1:
-            for i in range(startDateId, len(self._importData)):
-                if self._importData[i][0] == endDate:
-                    endDateId = i
-                    break
+        endDateId = startDateId
 
-        if startDateId == -1 or endDateId == -1:
-            return
+        while endDateId < datesSize and self._dates[endDateId] < endDate:
+            endDateId += 1
 
         plt.rcParams['figure.figsize'] = [12, 5]
         plt.plot(self._dates[startDateId:endDateId], self.MACDValues[startDateId:endDateId], label='MACD', color='b')
@@ -117,11 +112,11 @@ class MACD:
 
         plt.xlabel('data')
         plt.ylabel('wartość')
-        plt.title('MACD i SIGNAL')
+        plt.title(plotName)
         plt.legend()
         plt.show()
 
-    def playOnTheStockMarket(self, startDate: datetime, endDate: datetime) -> None:
+    def playOnTheStockMarket(self, startDate: datetime, endDate: datetime, plotName: str) -> None:
         datesInRange = list(filter(lambda a: startDate <= a <= endDate, self._dates))
         capitalByDate: list[int] = []
         shares = 1000
@@ -153,7 +148,7 @@ class MACD:
                         # Buy as many as possible
                         howManyToBuy = int(money / sharesValue)
                         money -= howManyToBuy * sharesValue
-                        shares = howManyToBuy
+                        shares += howManyToBuy
                         if shares == 0 and howManyToBuy == 0:
                             print("DATE:", formattedDate, ", STATUS: YOU ARE BROKE :(")
                         else:
@@ -164,7 +159,7 @@ class MACD:
 
         plt.xlabel('Data')
         plt.ylabel('Wartość')
-        plt.title('Kapitał')
+        plt.title(plotName)
         plt.plot(datesInRange, capitalByDate, label='CENA')
         plt.legend()
         plt.show()
