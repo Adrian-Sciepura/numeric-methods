@@ -65,9 +65,15 @@ void JacobiSolver<T>::solve()
 		Matrix<T>* temp = current;
 		current = next;
 		next = temp;
+		this->setOfEquations->swapX(current);
 		currentError = this->setOfEquations->norm();
 		currentIteration++;
 	}
+
+	delete next;
+
+	std::cout << "Error: " << currentError << std::endl;
+	std::cout << "Iterations: " << currentIteration << std::endl;
 }
 
 #endif

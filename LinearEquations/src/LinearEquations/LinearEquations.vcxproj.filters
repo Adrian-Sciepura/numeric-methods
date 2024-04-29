@@ -32,5 +32,8 @@
     <ClInclude Include="JacobiSolver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="GaussSeidelSolver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

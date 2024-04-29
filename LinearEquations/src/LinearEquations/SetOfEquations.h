@@ -20,6 +20,9 @@ public:
 	Matrix<T>* getB();
 	Matrix<T>* getX();
 
+	void swapX(Matrix<T>* newX);
+	void resetX();
+
 	Matrix<T> residuum();
 	T norm();
 };
@@ -28,7 +31,8 @@ public:
 template<arithmetic T>
 SetOfEquations<T>::SetOfEquations(Matrix<T>* A, Matrix<T>* b) : A{ A }, b{ b }
 {
-	this->x = new Matrix<T>(A->getRows(), 1, 0);
+	this->x = nullptr;
+	resetX();
 }
 
 template<arithmetic T>
@@ -56,6 +60,24 @@ Matrix<T>* SetOfEquations<T>::getX()
 }
 
 template<arithmetic T>
+void SetOfEquations<T>::swapX(Matrix<T>* newX)
+{
+	if (newX->getCols() != x->getCols() || newX->getRows() != x->getRows())
+		return;
+
+	this->x = newX;
+}
+
+template<arithmetic T>
+void SetOfEquations<T>::resetX()
+{
+	if (this->x != nullptr)
+		delete this->x;
+
+	this->x = new Matrix<T>(A->getRows(), 1, 0);
+}
+
+template<arithmetic T>
 Matrix<T> SetOfEquations<T>::residuum()
 {
 	Matrix<T> Ax = *(this->A) * *(this->x);
@@ -70,7 +92,7 @@ T SetOfEquations<T>::norm()
 	Matrix<T> r = this->residuum();
 	T** rawMatrix = r.getRawData();
 
-	for (int i = 0; i < r.getCols(); i++)
+	for (int i = 0; i < r.getRows(); i++)
 		sum += rawMatrix[i][0] * rawMatrix[i][0];
 
 	return sqrt(sum);

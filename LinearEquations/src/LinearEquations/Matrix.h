@@ -46,9 +46,7 @@ Matrix<T>::Matrix(int rows, int cols) : rows{ rows }, cols{ cols }
 	this->matrix = new T * [rows];
 
 	for (int i = 0; i < rows; i++)
-	{
 		this->matrix[i] = new T[cols];
-	}
 }
 
 template<arithmetic T>
@@ -86,18 +84,16 @@ void Matrix<T>::setDiagonal(T newValue, int offset)
 	if (this->cols != this->rows)
 		return;
 
-	int offsetSign = (offset > 0) - (offset < 0);
+	int x = offset > 0 ? offset : 0;
+	int y = offset > 0 ? 0 : -offset;
+	int iters = this->rows - abs(offset);
 
-	int x = 0;
-	int y = 0;
-
-	for (int i = 0; i < this->rows; i++)
+	for (int i = 0; i < iters; i++)
 	{
-		x = i + offset;
-		y = i - offset + offsetSign;
+		this->matrix[y][x] = newValue;
 
-		if (x >= 0 && x < this->cols && y >= 0 && y < this->rows)
-			this->matrix[y][x] = newValue;
+		x++;
+		y++;
 	}
 }
 
@@ -145,9 +141,9 @@ template<arithmetic T>
 inline Matrix<T> Matrix<T>::operator*(const Matrix<T>& other)
 {
 	if (this->cols != other.rows)
-		return Matrix<T>(0, 0);
+		return Matrix<T>(0, 0, 0);
 
-	Matrix<T> result(this->rows, other.cols);
+	Matrix<T> result(this->rows, other.cols, 0);
 
 	for (int i = 0; i < this->rows; i++)
 		for (int j = 0; j < other.cols; j++)
@@ -160,7 +156,7 @@ inline Matrix<T> Matrix<T>::operator*(const Matrix<T>& other)
 template<arithmetic T>
 Matrix<T> Matrix<T>::operator+(const Matrix<T>& other)
 {
-	Matrix<T> result(this->rows, this->cols);
+	Matrix<T> result(this->rows, this->cols, 0);
 
 	for (int i = 0; i < this->rows; i++)
 		for (int j = 0; j < this->cols; j++)
@@ -172,7 +168,7 @@ Matrix<T> Matrix<T>::operator+(const Matrix<T>& other)
 template<arithmetic T>
 inline Matrix<T> Matrix<T>::operator-(const Matrix<T>& other)
 {
-	Matrix<T> result(this->rows, this->cols);
+	Matrix<T> result(this->rows, this->cols, 0);
 
 	for (int i = 0; i < this->rows; i++)
 		for (int j = 0; j < this->cols; j++)
