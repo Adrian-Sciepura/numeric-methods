@@ -128,13 +128,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="EquationsSolver.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Matrix.cpp" />
-    <ClCompile Include="SetOfEquations.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="EquationsSolver.h" />
+    <ClInclude Include="JacobiSolver.h" />
     <ClInclude Include="Matrix.h" />
     <ClInclude Include="SetOfEquations.h" />
   </ItemGroup>

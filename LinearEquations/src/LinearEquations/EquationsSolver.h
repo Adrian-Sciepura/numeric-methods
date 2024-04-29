@@ -7,13 +7,20 @@
 template<arithmetic T>
 class EquationsSolver
 {
-private:
+protected:
 	SetOfEquations<T>* setOfEquations;
 
 public:
 	EquationsSolver(SetOfEquations<T>* setOfEquations);
 	
-	virtual Matrix<T>* solve() = 0;
+	virtual void solve() = 0;
 };
+
+
+template<arithmetic T>
+EquationsSolver<T>::EquationsSolver(SetOfEquations<T>* setOfEquations)
+{
+	this->setOfEquations = setOfEquations;
+}
 
 #endif
