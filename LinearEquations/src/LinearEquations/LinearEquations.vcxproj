@@ -137,6 +137,7 @@
     <ClInclude Include="LUfactorizationSolver.h" />
     <ClInclude Include="Matrix.h" />
     <ClInclude Include="SetOfEquations.h" />
+    <ClInclude Include="SolveLog.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

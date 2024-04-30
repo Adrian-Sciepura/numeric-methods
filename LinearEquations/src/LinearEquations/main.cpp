@@ -10,9 +10,9 @@ constexpr int c = 5;
 constexpr int d = 0;
 constexpr int N = 900 + c *10 + d;
 
-Matrix<double>* prepareExampleMatrix_A(double a1, double a2, double a3)
+Matrix<double>* prepareExampleMatrix_A(double a1, double a2, double a3, int size = N)
 {
-    Matrix<double>* A = new Matrix<double>(N, N, 0);
+    Matrix<double>* A = new Matrix<double>(size, size, 0);
     A->setDiagonal(a1, 0);
     A->setDiagonal(a2, 1);
     A->setDiagonal(a2, -1);
@@ -21,11 +21,11 @@ Matrix<double>* prepareExampleMatrix_A(double a1, double a2, double a3)
 	return A;
 }
 
-Matrix<double>* prepareExampleMatrix_B()
+Matrix<double>* prepareExampleMatrix_B(int size = N)
 {
-    auto b = new Matrix<double>(N, 1, 0);
+    auto b = new Matrix<double>(size, 1, 0);
     auto bRawData = b->getRawData();
-    for (int i = 0; i < N; i++)
+    for (int i = 0; i < size; i++)
         bRawData[i][0] = sin(i * (f + 1));
 
     return b;
@@ -123,7 +123,37 @@ void exercise_D()
 
 void exercise_E()
 {
+    std::vector<int> sizesToTest = { 100, 500, 1000, 2000, 3000, 4000, 5000 };
+    EquationsSolver<double>* solver;
 
+    for (auto size : sizesToTest)
+    {
+        std::cout << "\n\n------- Current size: " << size << " -------" << std::endl;
+
+        auto A = prepareExampleMatrix_A(5 + e, -1, -1, size);
+        auto b = prepareExampleMatrix_B(size);
+        auto equations = SetOfEquations<double>(A, b);
+
+        solver = new JacobiSolver<double>(&equations);
+        std::cout << "Jacobi: \n";
+        std::cout << solver->solve() << std::endl;
+        equations.resetX();
+        delete solver;
+        
+
+        solver = new GaussSeidelSolver<double>(&equations);
+        std::cout << "Gauss-Seidel: \n";
+        std::cout << solver->solve() << std::endl;
+        equations.resetX();
+        delete solver;
+        
+
+        solver = new LUfactorizationSolver<double>(&equations);
+        std::cout << "LU factorization: \n";
+        std::cout << solver->solve() << std::endl;
+        equations.resetX();
+        delete solver;
+    }
 }
 
 
@@ -132,6 +162,6 @@ int main()
     //exercise_A();
     //exercise_B();
     //exercise_C();
-    exercise_D();
-    //exercise_E();
+    //exercise_D();
+    exercise_E();
 }

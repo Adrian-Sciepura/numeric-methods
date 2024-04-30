@@ -12,7 +12,7 @@ public:
 	JacobiSolver(SetOfEquations<T>* setOfEquations);
 	~JacobiSolver();
 
-	virtual void solve();
+	virtual SolveLog solve();
 };
 
 
@@ -27,7 +27,7 @@ JacobiSolver<T>::~JacobiSolver()
 }
 
 template<arithmetic T>
-void JacobiSolver<T>::solve()
+SolveLog JacobiSolver<T>::solve()
 {
 	T acceptableError = static_cast<T>(0.000000001f);
 	T currentError = std::numeric_limits<T>::max();
@@ -44,6 +44,8 @@ void JacobiSolver<T>::solve()
 	T** b = this->setOfEquations->getB()->getRawData();
 
 	this->updateStartTime();
+
+	auto result = SolveLog();
 
 	while (acceptableError < currentError && currentIteration < maxIterations)
 	{
@@ -68,16 +70,16 @@ void JacobiSolver<T>::solve()
 		next = temp;
 		this->setOfEquations->swapX(current);
 		currentError = this->setOfEquations->norm();
+		result.norms->push_back(currentError);
 		currentIteration++;
 	}
 
 	this->updateEndTime();
-
 	delete next;
+	result.time = this->getExecutionTime();
+	result.iterations = currentIteration;
 
-	std::cout << "Error: " << currentError << std::endl;
-	std::cout << "Iterations: " << currentIteration << std::endl;
-	std::cout << "Time: " << this->getExecutionTime() << " seconds" << std::endl;
+	return result;
 }
 
 #endif

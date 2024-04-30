@@ -19,7 +19,7 @@ public:
 	LUfactorizationSolver(SetOfEquations<T>* setOfEquations);
 	~LUfactorizationSolver();
 
-	virtual void solve();
+	virtual SolveLog solve();
 };
 
 
@@ -73,7 +73,7 @@ LUfactorizationSolver<T>::~LUfactorizationSolver()
 }
 
 template<arithmetic T>
-void LUfactorizationSolver<T>::solve()
+SolveLog LUfactorizationSolver<T>::solve()
 {
 	int N = this->setOfEquations->getA()->getRows();
 	
@@ -86,6 +86,9 @@ void LUfactorizationSolver<T>::solve()
 	auto rawU = U->getRawData();
 	auto rawL = L->getRawData();
 
+	this->updateStartTime();
+
+	auto result = SolveLog();
 
 	for (int i = 2; i < N + 1; i++)
 	{
@@ -103,9 +106,7 @@ void LUfactorizationSolver<T>::solve()
 	forwardSubstitution();
 	backwardSubstitution();
 
-	T norm = this->setOfEquations->norm();
-	std::cout << "Error: " << norm << std::endl;
-
+	this->updateEndTime();
 
 	delete U;
 	delete L;
@@ -113,6 +114,12 @@ void LUfactorizationSolver<T>::solve()
 	this->U = nullptr;
 	this->L = nullptr;
 	this->Y = nullptr;
+
+	result.norms->push_back(this->setOfEquations->norm());
+	result.time = this->getExecutionTime();
+	result.iterations = 0;
+
+	return result;
 }
 
 #endif

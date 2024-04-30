@@ -12,7 +12,7 @@ public:
 	GaussSeidelSolver(SetOfEquations<T>* setOfEquations);
 	~GaussSeidelSolver();
 
-	virtual void solve();
+	virtual SolveLog solve();
 };
 
 
@@ -27,7 +27,7 @@ GaussSeidelSolver<T>::~GaussSeidelSolver()
 }
 
 template<arithmetic T>
-void GaussSeidelSolver<T>::solve()
+SolveLog GaussSeidelSolver<T>::solve()
 {
 	T acceptableError = static_cast<T>(0.000000001f);
 	T currentError = std::numeric_limits<T>::max();
@@ -44,6 +44,8 @@ void GaussSeidelSolver<T>::solve()
 	T** currentRawData = current->getRawData();
 
 	this->updateStartTime();
+
+	auto result = SolveLog();
 
 	while (acceptableError < currentError && currentIteration < maxIterations)
 	{
@@ -62,14 +64,15 @@ void GaussSeidelSolver<T>::solve()
 		}
 
 		currentError = this->setOfEquations->norm();
+		result.norms->push_back(currentError);
 		currentIteration++;
 	}
 
 	this->updateEndTime();
+	result.time = this->getExecutionTime();
+	result.iterations = currentIteration;
 
-	std::cout << "Error: " << currentError << std::endl;
-	std::cout << "Iterations: " << currentIteration << std::endl;
-	std::cout << "Time: " << this->getExecutionTime() << " seconds" << std::endl;
+	return result;
 }
 
 #endif

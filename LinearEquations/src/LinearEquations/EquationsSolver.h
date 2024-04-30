@@ -4,6 +4,7 @@
 #include <chrono>
 #include "SetOfEquations.h"
 #include "Matrix.h"
+#include "SolveLog.h"
 
 template<arithmetic T>
 class EquationsSolver
@@ -21,7 +22,7 @@ protected:
 public:
 	EquationsSolver(SetOfEquations<T>* setOfEquations);
 	
-	virtual void solve() = 0;
+	virtual SolveLog solve() = 0;
 	double getExecutionTime();
 };
 
