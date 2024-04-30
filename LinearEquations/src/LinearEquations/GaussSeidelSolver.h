@@ -64,7 +64,7 @@ SolveLog GaussSeidelSolver<T>::solve()
 		}
 
 		currentError = this->setOfEquations->norm();
-		result.norms->push_back(currentError);
+		result.norms.push_back(currentError);
 		currentIteration++;
 	}
 

@@ -128,9 +128,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="CSVExport.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CSVExport.h" />
     <ClInclude Include="EquationsSolver.h" />
     <ClInclude Include="GaussSeidelSolver.h" />
     <ClInclude Include="JacobiSolver.h" />

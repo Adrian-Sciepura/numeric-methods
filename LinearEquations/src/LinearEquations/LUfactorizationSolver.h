@@ -115,7 +115,7 @@ SolveLog LUfactorizationSolver<T>::solve()
 	this->L = nullptr;
 	this->Y = nullptr;
 
-	result.norms->push_back(this->setOfEquations->norm());
+	result.norms.push_back(this->setOfEquations->norm());
 	result.time = this->getExecutionTime();
 	result.iterations = 0;
 

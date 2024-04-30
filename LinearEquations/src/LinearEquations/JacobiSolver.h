@@ -70,7 +70,7 @@ SolveLog JacobiSolver<T>::solve()
 		next = temp;
 		this->setOfEquations->swapX(current);
 		currentError = this->setOfEquations->norm();
-		result.norms->push_back(currentError);
+		result.norms.push_back(currentError);
 		currentIteration++;
 	}
 
