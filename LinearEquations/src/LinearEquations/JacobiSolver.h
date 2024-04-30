@@ -32,7 +32,7 @@ void JacobiSolver<T>::solve()
 	T acceptableError = static_cast<T>(0.000000001f);
 	T currentError = std::numeric_limits<T>::max();
 	
-	int maxIterations = 1000;
+	int maxIterations = 100;
 	int currentIteration = 0;
 
 	Matrix<T>* current = this->setOfEquations->getX();
@@ -43,6 +43,7 @@ void JacobiSolver<T>::solve()
 	T** A = this->setOfEquations->getA()->getRawData();
 	T** b = this->setOfEquations->getB()->getRawData();
 
+	this->updateStartTime();
 
 	while (acceptableError < currentError && currentIteration < maxIterations)
 	{
@@ -70,10 +71,13 @@ void JacobiSolver<T>::solve()
 		currentIteration++;
 	}
 
+	this->updateEndTime();
+
 	delete next;
 
 	std::cout << "Error: " << currentError << std::endl;
 	std::cout << "Iterations: " << currentIteration << std::endl;
+	std::cout << "Time: " << this->getExecutionTime() << " seconds" << std::endl;
 }
 
 #endif

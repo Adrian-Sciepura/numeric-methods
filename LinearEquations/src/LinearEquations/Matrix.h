@@ -30,7 +30,6 @@ public:
 	int getRows();
 	int getCols();
 
-	//friend Matrix<T> operator*(const Matrix<T>& a, const Matrix<T>& b);
 	
 	Matrix<T> operator*(const Matrix<T>& other);
 	Matrix<T> operator+(const Matrix<T>& other);
@@ -76,7 +75,6 @@ Matrix<T>::~Matrix()
 		delete[] this->matrix;
 	}
 }
-
 
 template<arithmetic T>
 void Matrix<T>::setDiagonal(T newValue, int offset)
@@ -138,7 +136,7 @@ int Matrix<T>::getCols()
 }
 
 template<arithmetic T>
-inline Matrix<T> Matrix<T>::operator*(const Matrix<T>& other)
+Matrix<T> Matrix<T>::operator*(const Matrix<T>& other)
 {
 	if (this->cols != other.rows)
 		return Matrix<T>(0, 0, 0);
@@ -166,7 +164,7 @@ Matrix<T> Matrix<T>::operator+(const Matrix<T>& other)
 }
 
 template<arithmetic T>
-inline Matrix<T> Matrix<T>::operator-(const Matrix<T>& other)
+Matrix<T> Matrix<T>::operator-(const Matrix<T>& other)
 {
 	Matrix<T> result(this->rows, this->cols, 0);
 
@@ -196,21 +194,5 @@ Matrix<T>& Matrix<T>::operator+=(const Matrix<T>& other)
 
 	return *this;
 }
-
-//template<arithmetic T>
-//Matrix<T> operator*(const Matrix<T>& a, const Matrix<T>& b)
-//{
-//	if (a.cols != b.rows)
-//		return Matrix<T>(0, 0);
-//
-//	Matrix<T> result(a.rows, b.cols);
-//
-//	for (int i = 0; i < a.rows; i++)
-//		for (int j = 0; j < b.cols; j++)
-//			for (int k = 0; k < a.cols; k++)
-//				result.matrix[i][j] += a.matrix[i][k] * b.matrix[k][j];
-//
-//	return result;
-//}
 
 #endif

@@ -32,7 +32,7 @@ void GaussSeidelSolver<T>::solve()
 	T acceptableError = static_cast<T>(0.000000001f);
 	T currentError = std::numeric_limits<T>::max();
 
-	int maxIterations = 1000;
+	int maxIterations = 100;
 	int currentIteration = 0;
 
 	Matrix<T>* current = this->setOfEquations->getX();
@@ -42,6 +42,8 @@ void GaussSeidelSolver<T>::solve()
 	T** A = this->setOfEquations->getA()->getRawData();
 	T** b = this->setOfEquations->getB()->getRawData();
 	T** currentRawData = current->getRawData();
+
+	this->updateStartTime();
 
 	while (acceptableError < currentError && currentIteration < maxIterations)
 	{
@@ -63,8 +65,11 @@ void GaussSeidelSolver<T>::solve()
 		currentIteration++;
 	}
 
+	this->updateEndTime();
+
 	std::cout << "Error: " << currentError << std::endl;
 	std::cout << "Iterations: " << currentIteration << std::endl;
+	std::cout << "Time: " << this->getExecutionTime() << " seconds" << std::endl;
 }
 
 #endif
